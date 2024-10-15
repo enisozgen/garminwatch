@@ -1,0 +1,40 @@
+name: Build Garmin App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v2
+
+    - name: Set up Java 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: "11"
+
+    - name: Install Garmin Connect IQ SDK
+      run: |
+        wget https://developer.garmin.com/downloads/connect-iq/sdk/connectiq-sdk-lin-4.1.6.zip
+        unzip connectiq-sdk-lin-4.1.6.zip -d ~/connectiq-sdk
+        echo "CONNECTIQ_HOME=~/connectiq-sdk" >> $GITHUB_ENV
+
+    - name: Build the app
+      run: |
+        ~/connectiq-sdk/bin/monkeyc -o bin/HelloWorld.prg \
+          -f manifest.xml \
+          -m source/HelloWorldApp.mc
+
+    - name: Upload the built .prg file
+      uses: actions/upload-artifact@v2
+      with:
+        name: hello-world-app
+        path: bin/HelloWorld.prg

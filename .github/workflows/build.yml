@@ -23,18 +23,19 @@ jobs:
 
     - name: Install Garmin Connect IQ SDK
       run: |
-        wget https://developer.garmin.com/downloads/connect-iq/sdk/connectiq-sdk-lin-4.1.6.zip
-        unzip connectiq-sdk-lin-4.1.6.zip -d ~/connectiq-sdk
+        wget https://developer.garmin.com/downloads/connect-iq/sdks/connectiq-sdk-lin-3.1.9-2020-06-24-1cc9d3a70.zip
+        unzip connectiq-sdk-lin-3.1.9-2020-06-24-1cc9d3a70.zip -d ~/connectiq-sdk
         echo "CONNECTIQ_HOME=~/connectiq-sdk" >> $GITHUB_ENV
 
     - name: Build the app
       run: |
-        ~/connectiq-sdk/bin/monkeyc -o bin/HelloWorld.prg \
-          -f manifest.xml \
-          -m source/HelloWorldApp.mc
+        ~/connectiq-sdk/bin/monkeyc \
+          -o bin/HelloWorld.prg \
+          -m manifest.xml \
+          source/HelloWorldApp.mc
 
     - name: Upload the built .prg file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: hello-world-app
         path: bin/HelloWorld.prg

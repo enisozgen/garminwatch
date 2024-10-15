@@ -27,16 +27,17 @@ jobs:
         unzip connectiq-sdk-lin-3.1.9-2020-06-24-1cc9d3a70.zip -d ~/connectiq-sdk
         echo "CONNECTIQ_HOME=~/connectiq-sdk" >> $GITHUB_ENV
 
-    - name: Generate a Private Key
+    - name: Generate a Private Key in PKCS#8 DER format
       run: |
-        openssl genpkey -algorithm RSA -out mykey.pem -outform PEM
+        openssl genpkey -algorithm RSA -out mykey.pem
+        openssl pkcs8 -topk8 -inform PEM -outform DER -in mykey.pem -out mykey.der -nocrypt
 
     - name: Build the app
       run: |
         ~/connectiq-sdk/bin/monkeyc \
           -o bin/HelloWorld.prg \
           -m manifest.xml \
-          -y mykey.pem \
+          -y mykey.der \
           source/HelloWorldApp.mc
 
     - name: Upload the built .prg file
